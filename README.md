@@ -29,6 +29,7 @@ KeyHacks shows methods to validate different API keys found on a Bug Bounty Prog
 - [Cloudflare API key](#cloudflare-api-key)
 - [Cypress record key](#Cypress-record-key)
 - [DataDog API key](#DataDog-API-key)
+- [Databricks API key](#databricks-api-key)
 - [Delighted API key](#Delighted-api-key)
 - [Deviant Art Access Token](#Deviant-Art-Access-Token)
 - [Deviant Art Secret](#Deviant-Art-Secret)
@@ -48,6 +49,7 @@ KeyHacks shows methods to validate different API keys found on a Bug Bounty Prog
 - [Google Gemini API key](#google-gemini)
 - [Google Maps API key](#Google-Maps-API-key)
 - [Google Recaptcha key](#Google-Recaptcha-key)
+- [HashiCorp Vault token](#hashicorp-vault-token)
 - [Grafana Access Token](#Grafana-Access-Token)
 - [Help Scout OAUTH](#Help-Scout-OAUTH)
 - [Heroku API key](#Heroku-API-key)
@@ -58,6 +60,7 @@ KeyHacks shows methods to validate different API keys found on a Bug Bounty Prog
 - [Instagram Graph API](#Instagram-Graph-Api-Access-Token)
 - [Ipstack API Key](#Ipstack-API-Key)
 - [Iterable API Key](#Iterable-API-Key)
+- [Jumio API Key](#jumio-api-key)
 - [JumpCloud API Key](#JumpCloud-API-Key)
 - [Keen.io API Key](#Keenio-API-Key)
 - [LinkedIn OAUTH](#LinkedIn-OAUTH)
@@ -88,6 +91,7 @@ KeyHacks shows methods to validate different API keys found on a Bug Bounty Prog
 - [Spotify Access Token](#Spotify-Access-Token)
 - [Square](#Square)
 - [Stripe Live Token](#Stripe-Live-Token)
+- [Sentry Auth token](#sentry-auth-token)
 - [Telegram Bot API Token](#Telegram-Bot-API-Token)
 - [Travis CI API token](#Travis-CI-API-token)
 - [Twilio Account_sid and Auth token](#Twilio-Account_sid-and-Auth-token)
@@ -621,6 +625,11 @@ curl "https://api.wpengine.com/1.2/?method=site&account_name=ACCOUNT_NAME&wpe_ap
 curl "https://api.datadoghq.com/api/v1/dashboard?api_key=<api_key>&application_key=<application_key>"
 ```
 
+## [Databricks API key](https://docs.databricks.com/en/dev-tools/auth/index.html)
+```
+curl -X GET https://<databricks-instance>/api/2.0/clusters/list -H "Authorization: Bearer <API-KEY>"
+```
+
 ## [Delighted API key](https://app.delighted.com/docs/api)
 Do not delete the `:` at the end.
 ```
@@ -854,6 +863,17 @@ Export campaign analytics data in JSON format, one entry per line. Use of either
 ```
 curl -H "Api_Key: {API_KEY}" https://api.iterable.com/api/export/data.json?dataTypeName=emailSend&range=Today&onlyFields=List.empty
 ```
+
+## [Jumio API Key](https://github.com/Jumio/mobile-sdk-android#authentication-and-encryption)
+Request an OAuth2 token using the client id and secret:
+```
+curl --request POST --location 'https://auth.emea-1.jumio.ai/oauth2/token' \
+     --header 'Accept: application/json' \
+     --header 'Content-Type: application/x-www-form-urlencoded' \
+     --data-raw 'grant_type=client_credentials' \
+     --basic --user {API_KEY}:{API_SECRET}
+```
+
 ## [Amplitude API Keys](https://help.amplitude.com/hc/en-us/articles/205406637-Export-API-Export-Your-Project-s-Event-Data)
 The response is a zipped archive of JSON files, with potentially multiple files per hour. Note that events prior to 2014-11-12 will be grouped by day instead of by the hour. If you request data for a time range during which no data has been collected for the project, then you will receive a 404 response from the server.
 
@@ -907,6 +927,12 @@ curl -X POST \
    curl -s -X GET --user 'USER:PASSWORD' "https://www.pivotaltracker.com/services/v5/me -o pivotaltracker.json"
    jq --raw-output .api_token pivotaltracker.json
    ```
+
+## [HashiCorp Vault Token](https://www.vaultproject.io/api/auth/token)
+Look up information about the token making the call:
+```
+curl -s -H "X-Vault-Token: <your_token>" "https://vault.example.com/v1/auth/token/lookup-self"
+```
 ## [LinkedIn OAUTH](https://docs.microsoft.com/en-us/linkedin/shared/authentication/client-credentials-flow?context=linkedin/context)
 A successful access token request returns a JSON object containing access_token, expires_in.
 ```
@@ -936,6 +962,12 @@ A Successful Passkey Request returns a JSON object containing company name
 ```
 curl 'https://which-cpv-api.bazaarvoice.com/clientInfo?conversationspasskey=<Passkey>' --insecure 
 
+```
+
+## [Sentry Auth Token](https://docs.sentry.io/api/)
+Return a list of projects available to the authenticated session.
+```
+curl https://sentry.io/api/0/projects/ -H 'Authorization: Bearer <auth_token>'
 ```
 
 ## [Grafana Access Token](https://grafana.com/docs/grafana/latest/developers/http_api/user/)
