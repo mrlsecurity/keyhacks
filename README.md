@@ -626,9 +626,11 @@ curl "https://api.datadoghq.com/api/v1/dashboard?api_key=<api_key>&application_k
 ```
 
 ## [Databricks API key](https://docs.databricks.com/en/dev-tools/auth/index.html)
+Databricks is a data and analytics platform built on top of cloud storage and compute. A personal access token grants full REST API control of the workspace, so it matters wherever data pipelines and notebooks live. A valid token can read and exfiltrate notebooks (which frequently embed credentials and SQL), start or run jobs to gain code execution on cluster nodes, read mounted cloud storage (S3/ADLS/GCS), and pull configured secret scopes. The token often maps to a service principal with broad cloud IAM, widening the blast radius beyond Databricks itself.
 ```
 curl -X GET https://<databricks-instance>/api/2.0/clusters/list -H "Authorization: Bearer <API-KEY>"
 ```
+Enumerate `secrets/scopes/list` and `workspace/list` to gauge reach; the token often maps to a service principal with broad cloud IAM beyond Databricks.
 
 ## [Delighted API key](https://app.delighted.com/docs/api)
 Do not delete the `:` at the end.
@@ -865,6 +867,7 @@ curl -H "Api_Key: {API_KEY}" https://api.iterable.com/api/export/data.json?dataT
 ```
 
 ## [Jumio API Key](https://github.com/Jumio/mobile-sdk-android#authentication-and-encryption)
+Jumio is a KYC and identity-verification provider, so its credentials matter most in fintech, banking, and any onboarding flow that verifies users. The API key and secret together obtain an OAuth2 token that grants access to verification transactions: government IDs, selfies, and biometric data of end users — regulated PII under GDPR. A valid pair can also initiate new (billable) verification transactions. Note the region-specific host (`emea-1`, `us-1`).
 Request an OAuth2 token using the client id and secret:
 ```
 curl --request POST --location 'https://auth.emea-1.jumio.ai/oauth2/token' \
@@ -873,6 +876,7 @@ curl --request POST --location 'https://auth.emea-1.jumio.ai/oauth2/token' \
      --data-raw 'grant_type=client_credentials' \
      --basic --user {API_KEY}:{API_SECRET}
 ```
+Both the key and secret are required; the region host varies (`emea-1`, `us-1`), so try the one matching the target's deployment.
 
 ## [Amplitude API Keys](https://help.amplitude.com/hc/en-us/articles/205406637-Export-API-Export-Your-Project-s-Event-Data)
 The response is a zipped archive of JSON files, with potentially multiple files per hour. Note that events prior to 2014-11-12 will be grouped by day instead of by the hour. If you request data for a time range during which no data has been collected for the project, then you will receive a 404 response from the server.
@@ -929,10 +933,12 @@ curl -X POST \
    ```
 
 ## [HashiCorp Vault Token](https://www.vaultproject.io/api/auth/token)
+Vault is a central secrets-management system, so a token matters wherever it holds the keys to everything else: database credentials, dynamic cloud credentials, PKI signing, and arbitrary `kv` secrets. The reach of a token is bounded by its attached policies — `lookup-self` reveals the token's TTL and policies for recon, then accessible mounts can be read directly. A root or broadly-scoped token effectively exposes every downstream secret in the organisation, while a tightly-scoped token may expose little; enumerating the policies and mounts is the first step.
 Look up information about the token making the call:
 ```
 curl -s -H "X-Vault-Token: <your_token>" "https://vault.example.com/v1/auth/token/lookup-self"
 ```
+Always enumerate `sys/policy` and the accessible mounts to learn the token's true reach before assuming impact.
 ## [LinkedIn OAUTH](https://docs.microsoft.com/en-us/linkedin/shared/authentication/client-credentials-flow?context=linkedin/context)
 A successful access token request returns a JSON object containing access_token, expires_in.
 ```
@@ -965,10 +971,12 @@ curl 'https://which-cpv-api.bazaarvoice.com/clientInfo?conversationspasskey=<Pas
 ```
 
 ## [Sentry Auth Token](https://docs.sentry.io/api/)
+Sentry is an error-monitoring service, so its tokens matter wherever exception data is collected. A valid auth token can read error events and stack traces, which routinely leak source file paths, environment variables, internal hostnames, user PII, and occasionally credentials logged inside events. The reach depends on the token's scopes: a `project:read`/`org:read` token is limited to disclosure, while an `org:admin` token can add members and change organisation settings. The impact is usually information disclosure rather than direct compromise.
 Return a list of projects available to the authenticated session.
 ```
 curl https://sentry.io/api/0/projects/ -H 'Authorization: Bearer <auth_token>'
 ```
+Scoped tokens (`project:read`, `org:read`) limit access to disclosure; an `org:admin` token can add members and change organisation settings.
 
 ## [Grafana Access Token](https://grafana.com/docs/grafana/latest/developers/http_api/user/)
 Grafana API supports Bearer and Basic authorisation schemes. Bearer:
