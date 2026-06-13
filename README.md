@@ -15,6 +15,7 @@ KeyHacks shows methods to validate different API keys found on a Bug Bounty Prog
 - [Asana Access token](#Asana-Access-Token)
 - [AWS Access Key ID and Secret](#AWS-Access-Key-ID-and-Secret)
 - [Azure Application Insights APP ID and API Key](#Azure-Application-Insights-APP-ID-and-API-Key)
+- [Baidu Map (BMap) API Key](#baidu-map-bmap-api-key)
 - [Bazaarvoice Passkey](#Bazaarvoice-Passkey)
 - [Bing Maps API Key](#Bing-Maps-API-Key)
 - [Bit.ly Access token](#Bitly-Access-token)
@@ -562,6 +563,12 @@ Visit the following URL to check for validity:
 
 ```
 https://api2.branch.io/v1/app/KEY_HERE?branch_secret=SECRET_HERE
+```
+
+## [Baidu Map (BMap) API Key](https://lbsyun.baidu.com/index.php?title=webapi/guide/webservice-geocoding-abroad)
+Baidu Maps is a mapping and geolocation platform whose web APIs are authenticated by an access key (`ak`). The key is a client-side identifier, routinely embedded in JavaScript and mobile applications, and usage is billed and quota-metered against the owner's account. A valid, unrestricted key can be reused to call geocoding, place-search, and routing endpoints at the owner's expense; sustained abuse exhausts the quota and degrades map functionality in the legitimate application. The key does not expose sensitive user data, and the impact is reduced where the key is restricted by a referer/IP allowlist or requires an `sn` signature. Validate a key with a reverse-geocoding request (a live key returns a JSON object containing a `result` field):
+```
+curl "https://api.map.baidu.com/geocoder/v2/?ak=<API_KEY>&output=json&location=39.983424,116.322987&pois=1"
 ```
 
 ## [Bing Maps API Key](https://docs.microsoft.com/en-us/bingmaps/rest-services/locations/find-a-location-by-address)
