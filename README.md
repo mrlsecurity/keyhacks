@@ -27,6 +27,7 @@ KeyHacks shows methods to validate different API keys found on a Bug Bounty Prog
 - [ChatGPT/Open AI](#chatgptopen-ai)
 - [CircleCI Access Token](#CircleCI-Access-Token)
 - [Cloudflare API key](#cloudflare-api-key)
+- [Cognito IDP self-signup enabled](#cognito-idp-self-signup-enabled)
 - [Cypress record key](#Cypress-record-key)
 - [DataDog API key](#DataDog-API-key)
 - [Databricks API key](#databricks-api-key)
@@ -1047,6 +1048,23 @@ curl -k "https://api.deepseek.com/chat/completions" -H "Content-Type: applicatio
 ```
 curl -k "https://api.deepseek.com/chat/completions" -H "Content-Type: application/json" -H "Authorization: Bearer <DeepSeek_API_Key>" -d '{"model":"deepseek-chat","messages": [{"role": "system", "content": "You are a helpful assistant."},{"role": "user", "content": "Hello!"}],"stream": false}'
 ```
+
+## [Cognito IDP self-signup enabled](https://docs.aws.amazon.com/cli/latest/reference/cognito-idp/sign-up.html)
+Amazon Cognito User Pools authenticate users for web and mobile applications. The app `client-id` is a public identifier, routinely embedded in client-side JavaScript or mobile binaries, and is not a secret. The risk arises when the user pool is left configured to permit unauthenticated self-registration: any party who recovers the `client-id` can create and confirm an account, then authenticate against every resource the pool gates. This matters wherever a Cognito-backed application is intended for a closed or invite-only audience, since open self-signup grants unauthorised account holders the same access as legitimate users.
+
+Create a new user:
+```
+aws cognito-idp sign-up --client-id <client-id> --username <username> --password <password> --user-attributes Name=email,Value=<email> --region <region>
+```
+Confirm the user registration:
+```
+aws cognito-idp confirm-sign-up --client-id <client-id> --username <username> --confirmation-code <code> --region <region>
+```
+Initiate the authentication flow (only where `USER_PASSWORD_AUTH` is enabled):
+```
+aws cognito-idp initiate-auth --client-id <client-id> --auth-flow USER_PASSWORD_AUTH --auth-parameters USERNAME=<username>,PASSWORD=<password> --region <region>
+```
+A successful `sign-up` response confirms self-registration is open; the returned `IdToken` and `AccessToken` from `initiate-auth` then scope what the new account can reach.
 
 # Contributing
 
